@@ -16,12 +16,10 @@ const Profile = () => {
     const userdata=JSON.parse(storedIdToken)
     const usertoken=userdata.idToken
 
-
     const updatehandler=(event)=>{
         event.preventDefault();
         const enteredusername=usernameinputref.current.value;
-        const enteredphoto=photoinputref.current.value;
-        
+        const enteredphoto=photoinputref.current.value; 
         fetch('https://identitytoolkit.googleapis.com/v1/accounts:update?key=AIzaSyCSQZW4V17ETUf_ri1ZQA0CtAW8Q0vOhDs',
         {
           method:'POST',
@@ -33,23 +31,42 @@ const Profile = () => {
           headers:{'Content-Type':'application/json'}
         })
         .then((res)=>{
-          if(res.ok){
-            return res.json()
-          }
+          if(res.ok){return res.json()}
           else{
-            return res.json().then(data=>{
-              let errormessage='authentication failed';
-              errormessage=data.error.message;
-               throw new Error(errormessage)
-            })
-          }
-        })
+              return res.json().then(data=>{
+                let errormessage='authentication failed';
+                errormessage=data.error.message;
+                throw new Error(errormessage)})}
+          })
 
         .then((data)=>{
             navigate('/mainbody');
-            alert('PROFILE SUCCESFULLY UPDATED')
+            alert('PROFILE SUCCESFULLY UPDATED')})
+        .catch((err)=>{alert(err.message)}) 
+      }
+      const verifymail=(event)=>{
+        event.preventDefault()
+        alert('Check your entered mail for the verification message')
+        fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyCSQZW4V17ETUf_ri1ZQA0CtAW8Q0vOhDs',
+        {
+          method:'POST',
+          body:JSON.stringify({
+                requestType:"VERIFY_EMAIL",
+                idToken:usertoken,}),
+          headers:{'Content-Type':'application/json'}
         })
-        .catch((err)=>{alert(err.message)})
+        .then((res)=>{
+          if(res.ok){return res.json()}
+          else{
+              return res.json().then(data=>{
+                let errormessage='authentication failed';
+                errormessage=data.error.message;
+                throw new Error(errormessage)})}
+          })
+
+        .then((data)=>{
+            alert('email succesfully verified')})
+        .catch((err)=>{alert(err.message)}) 
       }
 
   return (
@@ -69,7 +86,9 @@ const Profile = () => {
             <Form.Label>Upload a photo here</Form.Label>
             <Form.Control type="file" ref={photoinputref}/>
             </Form.Group>
-            <Button variant="primary" onClick={updatehandler}>Update</Button>
+            <p>verify your account here <Button variant="primary" size="sm" style={{marginBottom:'2vh',}} onClick={verifymail}>verify</Button> </p>
+            <br></br>
+            <Button variant="primary" onClick={updatehandler} >Update</Button>
             <Button variant="outline-danger" onClick={()=>{navigate('/mainbody')}}>Cancel</Button>
         </Container>
     </div>
