@@ -60,6 +60,38 @@ const Login = () => {
     })
     .catch((err)=>{alert(err.message)})
   }
+  const forgotpassword=(event)=>{
+    const enteredemail=emailinputref.current.value;
+    event.preventDefault();
+    fetch('https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=AIzaSyCSQZW4V17ETUf_ri1ZQA0CtAW8Q0vOhDs',
+    {
+      method:'POST',
+      body:JSON.stringify({
+        requestType:"PASSWORD_RESET",
+        email:enteredemail
+      }),
+      headers:{'Content-Type': 'application/json'},
+    }).then((res)=>{
+      setIsLoading(false)
+      if(res.ok){
+        return res.json()
+      }
+      else{
+        return res.json().then(data=>{
+          let errormessage='authentication failed';
+           throw new Error(errormessage)
+        })
+      }
+    })
+    .then((data)=>{
+        // const dataString = JSON.stringify(data);
+        authcntxt.login(data.idToken);
+        !isLogin && setIsLogin(!isLogin)
+        navigate('/mainbody');
+        alert('A mail is sent for you to change your password')
+    })
+    .catch((err)=>{alert(err.message)})
+  }
   
   return (
     <div style={{height:'100vh', width:'100%', display:'flex',alignItems:'center',justifyContent:'center', backgroundImage:`url(${require('../assets/pexels-tirachard-kumtanom-733852.jpg')})`,backgroundSize:'cover', backgroundPosition:'center'}}>
@@ -79,6 +111,14 @@ const Login = () => {
             required ref={passwordinputref}
           />
         </div>
+        {isLogin?<button
+            type='button'
+            className={classes.toggle}
+            onClick={forgotpassword}
+            style={{border:'none',backgroundColor:'transparent',color:'red',fontSize:'smaller'}}
+          >
+            Forgot password
+          </button>:''}
         <div className={classes.actions}>
           {!isloading && <button
             type='submit'
