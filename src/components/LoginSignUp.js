@@ -1,7 +1,7 @@
 import { useState, useRef, useContext } from 'react';
 import classes from './AuthForm.module.css';
 import AuthContext from './auth-context';
-// import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
   const emailinputref=useRef();
@@ -11,7 +11,7 @@ const Login = () => {
   const [isloading,setIsLoading]=useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   
-//   const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
@@ -52,9 +52,11 @@ const Login = () => {
       }
     })
     .then((data)=>{
+        const dataString = JSON.stringify(data);
+        localStorage.setItem('idToken',dataString);
         authcntxt.login(data.idToken);
         !isLogin && setIsLogin(!isLogin)
-        // navigate('/');
+        navigate('/mainbody');
     })
     .catch((err)=>{alert(err.message)})
   }
