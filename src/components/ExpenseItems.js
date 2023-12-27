@@ -19,9 +19,7 @@ const  ExpenseItems= () => {
 
     const edithandler=(event,key)=>{
       event.preventDefault();
-      console.log(key)
-      selectedExpenseKey.current = key;
-      axios.put(`https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses/${key}.json`)
+      axios.delete(`https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses/${key}.json`)
     .then(response => {
       setExpenseData(response.data);
     })
