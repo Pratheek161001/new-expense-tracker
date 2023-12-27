@@ -1,16 +1,55 @@
-import React from 'react'
+import React, { useEffect,useState, useRef  } from 'react'
 import Container from 'react-bootstrap/esm/Container';
+import axios from 'axios';
+import Button from 'react-bootstrap/esm/Button';
 
-const  ExpenseItems= (props) => {
-    const {expenses:expenseItems}  = props;
+const  ExpenseItems= () => {
+    const [expenseData, setExpenseData] = useState([]);
+    const selectedExpenseKey = useRef(null);
+
+    useEffect(()=>{
+      axios.get('https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses.json')
+    .then(response => {
+      setExpenseData(response.data);
+    })
+    .catch(error => {
+      console.error('Error adding expense:', error.message);
+    });
+    },[expenseData])
+
+    const edithandler=(event,key)=>{
+      event.preventDefault();
+      console.log(key)
+      selectedExpenseKey.current = key;
+      axios.put(`https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses/${key}.json`)
+    .then(response => {
+      setExpenseData(response.data);
+    })
+    .catch(error => {
+      console.error('Error adding expense:', error.message);
+    });
+    }
+
+    const deletehandler=(event,key)=>{
+      event.preventDefault();
+      axios.delete(`https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses/${key}.json`)
+    .then(response => {
+      console.log('deleted');
+    })
+    .catch(error => {
+      console.error('Error adding expense:', error.message);
+    });
+
+    }
+    
   return (
     <div style={{backgroundColor:'beige',height:'100vh',width:'100%',}}>
         <Container>
           <h2 style={{paddingBottom:'3vh',textShadow:'1px 1px 3px slategrey',}}>Entered expenses here...</h2>
-           {expenseItems && expenseItems.length > 0 ? (
+          {expenseData && Object.keys(expenseData).length > 0 ? (
             <ul style={{ listStyle: 'none', padding: 0 }}>
-              {expenseItems.map((item, index) => (
-                <li key={index}>
+              {Object.keys(expenseData).map(key => (
+                <li key={key}>
                   <div  
                 style={{
                   display: 'flex',
@@ -24,9 +63,20 @@ const  ExpenseItems= (props) => {
                   boxShadow: '8px 8px 8px 1px slategrey',
                 }}
               >
-                  <div><h2>{item.category}</h2>
-                  <p>{item.description}</p></div>
-                  <div><h1 style={{display: 'flex',alignItems: 'center',justifyContent:'flex-end', marginRight:'1vh',}}>{item.amount} Rs</h1></div>
+                  <div>
+                    <h2>{expenseData[key].category}</h2>
+                    <p>{expenseData[key].description}</p>
+                  </div>
+                  <div style={{display: 'flex',
+                              flexDirection: 'column',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',}}>
+                  <h1 style={{display: 'flex',alignItems: 'center',justifyContent:'flex-end', marginRight:'1vh',}}>{expenseData[key].amount} Rs </h1>
+                  <div>
+                  <Button variant="outline-success" style={{fontSize:'10px'}} onClick={(event) => edithandler(event, key)}>Edit</Button>
+                  <Button variant="outline-danger" style={{fontSize:'10px', marginLeft:'3px'}} onClick={(event) => deletehandler(event, key)}>Delete</Button>
+                  </div>
+                 </div>
                   </div>
                 </li>   
               ))}
@@ -48,5 +98,4 @@ const  ExpenseItems= (props) => {
     </div>
   );
 };
-
 export default ExpenseItems;

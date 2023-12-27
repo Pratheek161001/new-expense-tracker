@@ -8,8 +8,6 @@ import ExpenseItems from './ExpenseItems';
 import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 
-
-
 const MainPage = () => {
   const [expenses, setExpenses] = useState([]);
   const amountRef = useRef(null);
@@ -29,10 +27,10 @@ const MainPage = () => {
   setExpenses([...expenses, newExpense]);
   axios.post('https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses.json', newExpense)
     .then(response => {
-      console.log( response.data);
+      console.log('item added');
     })
     .catch(error => {
-      console.error('Error adding expense:', error);
+      console.error('Error adding expense:', error.message);
     });
  };
   return (<>
@@ -65,9 +63,7 @@ const MainPage = () => {
       </Container>
     </div>
     <ExpenseItems expenses={expenses}/>
-    
   </>
-    
   )
 }
 
