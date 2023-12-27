@@ -6,6 +6,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import Navbar from './NavBar';
 import ExpenseItems from './ExpenseItems';
 import Button from 'react-bootstrap/Button';
+import axios from 'axios';
+
 
 
 const MainPage = () => {
@@ -25,8 +27,14 @@ const MainPage = () => {
     description
   };
   setExpenses([...expenses, newExpense]);
+  axios.post('https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses.json', newExpense)
+    .then(response => {
+      console.log( response.data);
+    })
+    .catch(error => {
+      console.error('Error adding expense:', error);
+    });
  };
-
   return (<>
         <SideCrumbs/>
   <Navbar/>

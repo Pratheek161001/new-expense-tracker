@@ -31,7 +31,19 @@ const  ExpenseItems= (props) => {
                 </li>   
               ))}
             </ul>)
-           : (<p>No expense items to display</p>)}
+           : ( <div  
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              border: '1px solid black',
+              justifyContent: 'center',
+              padding: '5vh',
+              marginBottom:'3vh',
+              borderRadius: '30px',
+              boxShadow: '8px 8px 8px 1px slategrey',
+            }}><p>No expense items to display</p></div>)
+           }
       </Container>
     </div>
   );
