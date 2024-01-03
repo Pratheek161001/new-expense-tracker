@@ -2,8 +2,11 @@ import React, { useEffect,useState, useRef  } from 'react'
 import Container from 'react-bootstrap/esm/Container';
 import axios from 'axios';
 import Button from 'react-bootstrap/esm/Button';
+import { connect } from 'react-redux';
 
-const  ExpenseItems= () => {
+const  ExpenseItems= ({ expenses, onValuesUpdate,currentTheme }) => {
+  console.log(currentTheme)
+
     const [expenseData, setExpenseData] = useState([]);
     const selectedExpenseKey = useRef(null);
 
@@ -19,6 +22,15 @@ const  ExpenseItems= () => {
 
     const edithandler=(event,key)=>{
       event.preventDefault();
+      axios.get(`https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses/${key}.json`)
+      .then(response => {
+        const values=response.data;
+        onValuesUpdate(values);
+      })
+      .catch(error => {
+        console.error('Error adding expense:', error.message);
+      });
+      
       axios.delete(`https://expense-tracker-54bba-default-rtdb.firebaseio.com/expenses/${key}.json`)
     .then(response => {
       setExpenseData(response.data);
@@ -41,15 +53,18 @@ const  ExpenseItems= () => {
     }
     
   return (
-    <div style={{backgroundColor:'beige',height:'100vh',width:'100%',}}>
+    // <div style={currentTheme === 'light' ? {backgroundColor:'beige',height:'60vh',width:'100%',paddingTop:'60px'} : {backgroundColor:'rgb(58,59,60)',height:'60vh',width:'100%',paddingTop:'60px'}}>
+
+    <div style={currentTheme === 'light' ? {backgroundColor:'beige',height:'100vh',width:'100%'} : {backgroundColor:'rgb(24,25,26)',height:'100vh',width:'100%'}}>
         <Container>
-          <h2 style={{paddingBottom:'3vh',textShadow:'1px 1px 3px slategrey',}}>Entered expenses here...</h2>
+          <h2 style={currentTheme === 'light' ?{paddingBottom:'3vh',textShadow:'1px 1px 3px slategrey',color:'black'}:{paddingBottom:'3vh',textShadow:'1px 1px 3px slategrey',color:'white'}}>Entered expenses here...</h2>
           {expenseData && Object.keys(expenseData).length > 0 ? (
             <ul style={{ listStyle: 'none', padding: 0 }}>
               {Object.keys(expenseData).map(key => (
                 <li key={key}>
                   <div  
-                style={{
+                style={currentTheme === 'light' ?
+                {  
                   display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
@@ -59,7 +74,19 @@ const  ExpenseItems= () => {
                   marginBottom:'3vh',
                   borderRadius: '30px',
                   boxShadow: '8px 8px 8px 1px slategrey',
-                }}
+                  color:'black'
+                }:{backgroundColor:'rgb(58,59,60)',
+                  display: 'flex',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  border: '1px solid black',
+                  justifyContent: 'space-between',
+                  padding: '5vh',
+                  marginBottom:'3vh',
+                  borderRadius: '30px',
+                  boxShadow: '8px 8px 8px 1px slategrey',
+                  color:"white"
+              }}
               >
                   <div>
                     <h2>{expenseData[key].category}</h2>
@@ -96,4 +123,10 @@ const  ExpenseItems= () => {
     </div>
   );
 };
-export default ExpenseItems;
+
+const mapStateToProps = (state) => {
+  return {
+    currentTheme: state.theme,
+  };
+};
+export default connect(mapStateToProps)(ExpenseItems);

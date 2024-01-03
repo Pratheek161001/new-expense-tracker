@@ -1,9 +1,11 @@
 import { useState, useRef, useContext } from 'react';
 import classes from './AuthForm.module.css';
 import AuthContext from './auth-context';
+import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom'
 
 const Login = () => {
+  const dispatch = useDispatch();
   const emailinputref=useRef();
   const passwordinputref=useRef();
   const authcntxt=useContext(AuthContext);
@@ -84,7 +86,6 @@ const Login = () => {
       }
     })
     .then((data)=>{
-        // const dataString = JSON.stringify(data);
         authcntxt.login(data.idToken);
         !isLogin && setIsLogin(!isLogin)
         navigate('/mainbody');
