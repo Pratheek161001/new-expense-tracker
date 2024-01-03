@@ -9,8 +9,7 @@ import Button from 'react-bootstrap/Button';
 import axios from 'axios';
 import { connect } from 'react-redux';
 
-const MainPage = ({ currentTheme }) => {
-  console.log(currentTheme)
+const MainPage = ({ currentTheme,onpremium}) => {
   const [expenses, setExpenses] = useState([]);
   const [amountValue, setAmountValue] = useState('');
   const [categoryValue, setCategoryValue] = useState('Select a Catagory');
